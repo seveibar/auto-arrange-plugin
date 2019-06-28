@@ -1,5 +1,5 @@
 /*!
-* rete-auto-arrange-plugin v0.3.0 
+* rete-auto-arrange-plugin v0.3.1 
 * (c) 2019 Vitaliy Stoliarov 
 * Released under the MIT license.
 */
@@ -63,24 +63,8 @@ function _slicedToArray(arr, i) {
   return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
 }
 
-function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
-}
-
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-    return arr2;
-  }
-}
-
 function _arrayWithHoles(arr) {
   if (Array.isArray(arr)) return arr;
-}
-
-function _iterableToArray(iter) {
-  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
 }
 
 function _iterableToArrayLimit(arr, i) {
@@ -107,10 +91,6 @@ function _iterableToArrayLimit(arr, i) {
   }
 
   return _arr;
-}
-
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance");
 }
 
 function _nonIterableRest() {
@@ -10557,79 +10537,6 @@ function () {
   }
 
   _createClass(AutoArrange, [{
-    key: "getNodes",
-    value: function getNodes(node) {
-      var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'output';
-      var nodes = [];
-      var key = "".concat(type, "s");
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = node[key].values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var io = _step.value;
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
-
-          try {
-            for (var _iterator2 = io.connections.values()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              var connection = _step2.value;
-              nodes.push(connection[type === 'input' ? 'output' : 'input'].node);
-            }
-          } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-                _iterator2["return"]();
-              }
-            } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
-              }
-            }
-          }
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-            _iterator["return"]();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-
-      return nodes;
-    }
-  }, {
-    key: "getNodesTable",
-    value: function getNodesTable(node) {
-      var _this = this;
-
-      var cols = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-      var depth = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-      if (this.depth && depth > this.depth) return;
-      if (!cols[depth]) cols[depth] = [];
-      if (cols[depth].includes(node)) return;
-      cols[depth].push(node);
-      this.getNodes(node, 'output').map(function (n) {
-        return _this.getNodesTable(n, cols, depth + 1);
-      });
-      this.getNodes(node, 'input').map(function (n) {
-        return _this.getNodesTable(n, cols, depth - 1);
-      });
-      return cols;
-    }
-  }, {
     key: "nodeSize",
     value: function nodeSize(node) {
       var el = this.editor.view.nodes.get(node).el;
@@ -10641,20 +10548,9 @@ function () {
   }, {
     key: "arrange",
     value: function arrange() {
-      var _this2 = this;
+      var _this = this;
 
       var node = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.editor.nodes[0];
-      var table = this.getNodesTable(node);
-      var normalized = Object.keys(table).sort(function (i1, i2) {
-        return +i1 - +i2;
-      }).map(function (key) {
-        return table[key];
-      });
-      var widths = normalized.map(function (col) {
-        return Math.max.apply(Math, _toConsumableArray(col.map(function (n) {
-          return _this2.nodeSize(n).width;
-        })));
-      });
       var graph = {
         id: "root",
         layoutOptions: {
@@ -10663,20 +10559,20 @@ function () {
         children: this.editor.nodes.map(function (n, i) {
           return _objectSpread({
             id: n.id
-          }, _this2.nodeSize(n));
+          }, _this.nodeSize(n));
         }),
         edges: this.editor.nodes.flatMap(function (n, i) {
           var edges = [];
-          var _iteratorNormalCompletion3 = true;
-          var _didIteratorError3 = false;
-          var _iteratorError3 = undefined;
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
 
           try {
-            for (var _iterator3 = n.inputs.entries()[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-              var _step3$value = _slicedToArray(_step3.value, 2),
-                  name = _step3$value[0],
-                  _step3$value$1$connec = _slicedToArray(_step3$value[1].connections, 1),
-                  output = _step3$value$1$connec[0].output;
+            for (var _iterator = n.inputs.entries()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var _step$value = _slicedToArray(_step.value, 2),
+                  name = _step$value[0],
+                  _step$value$1$connect = _slicedToArray(_step$value[1].connections, 1),
+                  output = _step$value$1$connect[0].output;
 
               edges.push({
                 id: "e.".concat(i, ".").concat(name),
@@ -10685,16 +10581,16 @@ function () {
               });
             }
           } catch (err) {
-            _didIteratorError3 = true;
-            _iteratorError3 = err;
+            _didIteratorError = true;
+            _iteratorError = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-                _iterator3["return"]();
+              if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+                _iterator["return"]();
               }
             } finally {
-              if (_didIteratorError3) {
-                throw _iteratorError3;
+              if (_didIteratorError) {
+                throw _iteratorError;
               }
             }
           }
@@ -10703,22 +10599,83 @@ function () {
         })
       };
       var g = new dagre.graphlib.Graph();
-      g.setGraph({});
+      g.setGraph({
+        rankdir: "RL",
+        align: "dl",
+        nodesep: this.margin !== undefined ? 50 : this.margin
+      });
       g.setDefaultEdgeLabel(function () {
         return {};
+      });
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = graph.children[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var _node = _step2.value;
+          g.setNode(_node.id, {
+            label: _node.id,
+            width: _node.width,
+            height: _node.height
+          });
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+            _iterator2["return"]();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = graph.edges[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var edge = _step3.value;
+          g.setEdge(edge.sources[0], edge.targets[0]);
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+            _iterator3["return"]();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+
+      dagre.layout(g, {
+        rankdir: "RL",
+        align: "dl"
+      });
+      var idToPos = {};
+      g.nodes().forEach(function (nodeId) {
+        var pos = g.node(nodeId);
+        idToPos[nodeId] = pos;
       });
       var _iteratorNormalCompletion4 = true;
       var _didIteratorError4 = false;
       var _iteratorError4 = undefined;
 
       try {
-        for (var _iterator4 = graph.children[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-          var _node = _step4.value;
-          g.setNode(_node.id, {
-            label: _node.id,
-            width: _node.width,
-            height: _node.height
-          });
+        for (var _iterator4 = this.editor.view.nodes.values()[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          var v = _step4.value;
+          v.translate(idToPos[v.node.id].x, idToPos[v.node.id].y);
         }
       } catch (err) {
         _didIteratorError4 = true;
@@ -10732,66 +10689,6 @@ function () {
           if (_didIteratorError4) {
             throw _iteratorError4;
           }
-        }
-      }
-
-      var _iteratorNormalCompletion5 = true;
-      var _didIteratorError5 = false;
-      var _iteratorError5 = undefined;
-
-      try {
-        for (var _iterator5 = graph.edges[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-          var edge = _step5.value;
-          g.setEdge(edge.sources[0], edge.targets[0]);
-        }
-      } catch (err) {
-        _didIteratorError5 = true;
-        _iteratorError5 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
-            _iterator5["return"]();
-          }
-        } finally {
-          if (_didIteratorError5) {
-            throw _iteratorError5;
-          }
-        }
-      }
-
-      dagre.layout(g);
-      g.nodes().forEach(function (v) {
-        console.log("Node " + v + ": " + JSON.stringify(g.node(v)));
-      });
-      g.edges().forEach(function (e) {
-        console.log("Edge " + e.v + " -> " + e.w + ": " + JSON.stringify(g.edge(e)));
-      });
-      var x = 0;
-
-      for (var _i = 0, _Object$entries = Object.entries(normalized); _i < _Object$entries.length; _i++) {
-        var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
-            i = _Object$entries$_i[0],
-            col = _Object$entries$_i[1];
-
-        var heights = col.map(function (n) {
-          return _this2.nodeSize(n).height;
-        });
-        var fullHeight = heights.reduce(function (a, b) {
-          return a + b + _this2.margin.y;
-        });
-        var y = 0;
-        x += widths[i] + this.margin.x;
-
-        for (var _i2 = 0, _Object$entries2 = Object.entries(col); _i2 < _Object$entries2.length; _i2++) {
-          var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
-              j = _Object$entries2$_i[0],
-              n = _Object$entries2$_i[1];
-
-          y += heights[j] + this.margin.y;
-          this.editor.view.nodes.get(n).translate(x, y - fullHeight / 2);
-          this.editor.view.updateConnections({
-            node: n
-          });
         }
       }
     }

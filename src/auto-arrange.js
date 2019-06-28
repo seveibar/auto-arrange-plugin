@@ -7,30 +7,6 @@ export class AutoArrange {
         this.depth = depth;
     }
 
-    getNodes(node, type = 'output') {
-        const nodes = [];
-        const key = `${type}s`;
-
-        for (let io of node[key].values())
-            for (let connection of io.connections.values())
-                nodes.push(connection[type === 'input' ? 'output' : 'input'].node);
-
-        return nodes;
-    }
-
-    getNodesTable(node, cols = [], depth = 0) {
-        if (this.depth && depth > this.depth) return;
-        if (!cols[depth]) cols[depth] = [];
-        if (cols[depth].includes(node)) return;
-
-        cols[depth].push(node);
-
-        this.getNodes(node, 'output').map(n => this.getNodesTable(n, cols, depth + 1));
-        this.getNodes(node, 'input').map(n => this.getNodesTable(n, cols, depth - 1));
-
-        return cols;
-    }
-
     nodeSize(node) {
         const el = this.editor.view.nodes.get(node).el;
 
@@ -66,7 +42,8 @@ export class AutoArrange {
 
         g.setGraph({
           rankdir: "RL",
-          align: "dl"
+          align: "dl",
+          nodesep: this.margin !== undefined ? 50 : this.margin
         })
         g.setDefaultEdgeLabel(function() { return {}; });
 

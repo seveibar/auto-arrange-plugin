@@ -10575,14 +10575,18 @@ function () {
             for (var _iterator = n.inputs.entries()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
               var _step$value = _slicedToArray(_step.value, 2),
                   name = _step$value[0],
-                  _step$value$1$connect = _slicedToArray(_step$value[1].connections, 1),
-                  output = _step$value$1$connect[0].output;
+                  connections = _step$value[1].connections;
 
-              edges.push({
-                id: "e.".concat(i, ".").concat(name),
-                sources: [n.id],
-                targets: [output.node.id]
-              });
+              if (connections.length > 0) {
+                var _connections = _slicedToArray(connections, 1),
+                    output = _connections[0].output;
+
+                edges.push({
+                  id: "e.".concat(i, ".").concat(name),
+                  sources: [n.id],
+                  targets: [output.node.id]
+                });
+              }
             }
           } catch (err) {
             _didIteratorError = true;
